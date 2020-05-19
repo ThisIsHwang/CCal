@@ -17,7 +17,6 @@ class CCCalDlg : public CDialogEx
 {
 // 생성입니다.
 public:
-	bool isDotClicked;
 	long long int mCurValInt;
 	long double mPreVal;
 	long double mCurValReal;
@@ -26,7 +25,7 @@ public:
 	bool mAfterDot;
 	bool mIsMinus;
 	int mPreRealNumCnt;
-	int mRealNumCnt;
+	int mCurRealNumCnt;
 	CCCalDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 
 // 대화 상자 데이터입니다.
@@ -63,7 +62,7 @@ public:
 	afx_msg void OnBnClicked9();
 	afx_msg void OnBnClicked0();
 	afx_msg void OnBnClickedPlus();
-	void CCCalDlg::CalOP(int);
+	void CalOP(int);
 	afx_msg void OnBnClickedMinus();
 	afx_msg void OnBnClickedMulti();
 	afx_msg void OnBnClickedDivide();

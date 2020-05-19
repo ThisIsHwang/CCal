@@ -129,7 +129,7 @@ BOOL CCCalDlg::OnInitDialog()
 	mOP = PLUS;
 	mAfterDot = false;
 	mIsMinus = false;
-	mRealNumCnt = 0;
+	mCurRealNumCnt = 0;
 	mPreRealNumCnt = 0;
 	SetDlgItemTextW(IDC_RESULT, L"0");
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -297,22 +297,22 @@ void CCCalDlg::OnBnClickedBackspace()
 {
 
     // TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	if (mCurValInt == 0 && mCurValReal == 0 && mRealNumCnt == 0) return;
+	if (mCurValInt == 0 && mCurValReal == 0 && mCurRealNumCnt == 0) return;
 	CString s, s2;
-	if (mRealNumCnt == 0) {
+	if (mCurRealNumCnt == 0) {
 		mCurValInt = mCurValInt / 10;
+		mAfterDot = false;
 	}
 	else
 	{
-		int temp = (int)(mCurValReal * pow(10, mRealNumCnt));
-		mCurValReal = mCurValReal - temp % 10 * pow(10, -mRealNumCnt);
-		mRealNumCnt--;
+		int temp = (int)(mCurValReal * pow(10, mCurRealNumCnt));
+		mCurValReal = mCurValReal - temp % 10 * pow(10, -mCurRealNumCnt);
+		mCurRealNumCnt--;
 	}
-	if (mRealNumCnt == 0)
-		mAfterDot = false;
+		
 	long double temp = mCurValInt + mCurValReal;
 	
-	s2.Format(L"%%.%dlf", mRealNumCnt);
+	s2.Format(L"%%.%dlf", mCurRealNumCnt);
 	
 	s.Format(s2, temp);
 	SetDlgItemTextW(IDC_RESULT, s);
@@ -360,7 +360,7 @@ void CCCalDlg::CalOP(int op) {
 	mIsMinus = false;
 	mCurValInt = 0;
 	mCurValReal = 0.0;
-	mRealNumCnt = 0;
+	mCurRealNumCnt = 0;
 }
 
 
@@ -374,8 +374,8 @@ void CCCalDlg::PushNum(long long int v) {
 			mCurValInt = mCurValInt * 10 + v;
 		}
 		else {
-			mRealNumCnt++;
-			mCurValReal = mCurValReal + v * pow(10, -(mRealNumCnt));
+			mCurRealNumCnt++;
+			mCurValReal = mCurValReal + v * pow(10, -(mCurRealNumCnt));
 		}
 	}
 	else {
@@ -385,29 +385,23 @@ void CCCalDlg::PushNum(long long int v) {
 			return;*/
 		}
 		else {
-			mRealNumCnt++;
-			if (mCurValReal == 0) 
-				mCurValReal = -(mCurValReal + v * pow(10, -(mRealNumCnt)));
-			else
-				mCurValReal = mCurValReal - v * pow(10, -(mRealNumCnt));
+			mCurRealNumCnt++;
+			mCurValReal = mCurValReal - v * pow(10, -(mCurRealNumCnt));
 		}
 	}
 	
-	
 	if (mOP == MULTI) {
-		mPreRealNumCnt = mPreRealNumCnt + mRealNumCnt;
-	}else if (mPreRealNumCnt < mRealNumCnt) {
-		mPreRealNumCnt = mRealNumCnt;
+		mPreRealNumCnt = mPreRealNumCnt + mCurRealNumCnt;
+	}else if (mPreRealNumCnt < mCurRealNumCnt) {
+		mPreRealNumCnt = mCurRealNumCnt;
 	}
-	
-	
 	
 	long double temp;
 	
 	temp = mCurValInt + mCurValReal;
 	
 	CString s, s2;
-	s2.Format(L"%%.%dlf", mRealNumCnt);
+	s2.Format(L"%%.%dlf", mCurRealNumCnt);
 	s.Format(s2, temp);
 	SetDlgItemTextW(IDC_RESULT, s);
 }
@@ -421,7 +415,7 @@ void CCCalDlg::OnBnClickedClear()
 	mAfterDot = false;
 	mIsMinus = false;
 	mPreRealNumCnt = 0;
-	mRealNumCnt = 0;
+	mCurRealNumCnt = 0;
 	SetDlgItemTextW(IDC_RESULT, L"0");
 }
 
@@ -439,7 +433,7 @@ void CCCalDlg::OnBnClickedDot()
 	long double temp;
 	temp = mCurValInt + mCurValReal;
 	CString s, s2;
-	s2.Format(L"%%.%dlf", mRealNumCnt);
+	s2.Format(L"%%.%dlf", mCurRealNumCnt);
 	s.Format(s2, temp);
 	if(!mAfterDot)
 		SetDlgItemTextW(IDC_RESULT, s + L".");
